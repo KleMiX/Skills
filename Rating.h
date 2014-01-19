@@ -24,7 +24,7 @@ struct Rating
     Rating(double mean, double standardDeviation, double conservativeMultiplier) : mean(mean), standardDeviation(standardDeviation), conservativeMultiplier(conservativeMultiplier) { }
     
     // A conservative estimate of skill based on the mean and standard deviation
-    double ConservativeRating()
+    double ConservativeRating() const
     {
         return mean - conservativeMultiplier * standardDeviation;
     }
