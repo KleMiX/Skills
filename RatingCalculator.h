@@ -20,5 +20,6 @@ enum GameResult
 namespace RatingCalculator
 {
     double  CalculateMatchQuality(Rating player1, Rating player2);
+    double  CalculateWinChance(Rating player1, Rating player2);
     void    CalculateNewRatings(Rating& player1, Rating& player2, int rank1, int rank2);
 }

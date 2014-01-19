@@ -16,6 +16,7 @@ struct Player
     int gamesWon;
     int gamesLost;
     int luck;
+    int points;
     
     Player()
     {
@@ -23,11 +24,41 @@ struct Player
         gamesLost = 0;
         gamesWon = 0;
         luck = rand() % 10;
+        points = 100;
+    }
+    
+    void RegisterBattle(bool won, Player& opponent)
+    {
+        if (won)
+        {
+            gamesWon++;
+            opponent.gamesLost++;
+        }
+        else
+        {
+            gamesLost++;
+            opponent.gamesWon++;
+        }
+        
+        // some very basic points system
+
+        double chance = RatingCalculator::CalculateWinChance(r, opponent.r); // chance to win
+        double diff = won ? (1.0 - chance) : chance; // invert pointing if we actually won
+        int pts = round(diff * 12.0); // max of 12 points per round - (1.0 chance to win with a lose or 0.0 chance to win with a win)
+        
+//        std::cout << won << " with chance of " << chance << (won ? " +" : " -") << pts << std::endl; // debug info
+        
+        // assign points
+        points += pts * (won ? 1 : -1);
+        points = std::max(points, 0);
+        
+        opponent.points += pts * (!won ? 1 : -1);
+        opponent.points = std::max(opponent.points, 0);
     }
     
     void PrintInfo()
     {
-         std::cout << "rating: " << r.mean << ", " << r.standardDeviation << ", total games: " << gamesLost + gamesWon << ", games won: " << gamesWon << ", games lost: " << gamesLost << std::endl;
+         std::cout << "rating: " << r.mean << ", " << r.standardDeviation << ", total games: " << gamesLost + gamesWon << ", games won: " << gamesWon << ", games lost: " << gamesLost << ", points: " << points << std::endl;
     }
 };
 
@@ -61,16 +92,7 @@ int main(int argc, const char * argv[])
             {
                 bool won = players[i].luck >= opponent.luck;//rand() % 2 == 1;
 
-                if (won)
-                {
-                    players[i].gamesWon++;
-                    opponent.gamesLost++;
-                }
-                else
-                {
-                    players[i].gamesLost++;
-                    opponent.gamesWon++;
-                }
+                players[i].RegisterBattle(won, opponent);
                 
                 RatingCalculator::CalculateNewRatings(players[i].r, opponent.r, won ? 1 : 0, won ? 0 : 1);
             }

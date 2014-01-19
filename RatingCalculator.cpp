@@ -110,6 +110,14 @@ double RatingCalculator::CalculateMatchQuality(Rating player1Rating, Rating play
     return sqrtPart*expPart;
 }
 
+double RatingCalculator::CalculateWinChance(Rating player1, Rating player2)
+{
+    double deltaMu = player1.mean - player2.mean;
+    double rsss = sqrt(player1.standardDeviation*player1.standardDeviation + player2.standardDeviation*player2.standardDeviation);
+
+    return GaussianDistribution::CumulativeTo(deltaMu / rsss);
+}
+
 double RatingCalculator::GetDrawMarginFromDrawProbability(double drawProbability, double beta)
 {
     // Derived from TrueSkill technical report (MSR-TR-2006-80), page 6
